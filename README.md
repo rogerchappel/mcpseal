@@ -26,6 +26,9 @@ mcpseal check ./examples/risky-mcp.json --fail-on secret-env,broad-fs,risky-comm
 
 ## Commands
 
+See [docs/CLI.md](docs/CLI.md) for the full CLI reference.
+
+
 ### `scan`
 
 Produces Markdown by default:
