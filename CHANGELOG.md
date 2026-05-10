@@ -10,6 +10,9 @@ format and uses semantic versioning when versioned releases are published.
 ### Added
 
 - Initial project setup.
+- Local-first MCP config scanner CLI.
+- Deterministic Markdown and JSON reports.
+- Redaction, `--fail-on` gates, examples, tests, and smoke checks.
 
 ## Release Links
 
