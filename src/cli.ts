@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { EXIT_ERROR, EXIT_GATE_FAILED, EXIT_OK } from './exit-codes.js';
 import { loadTargets } from './load.js';
 import { renderJson, renderMarkdown } from './render.js';
 import { parseFailOn, scanTargets, VERSION } from './scan.js';
@@ -28,10 +29,10 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
     } else {
       process.stdout.write(rendered);
     }
-    return report.summary.failedGates.length > 0 ? 2 : 0;
+    return report.summary.failedGates.length > 0 ? EXIT_GATE_FAILED : EXIT_OK;
   } catch (error) {
     process.stderr.write(`mcpseal: ${error instanceof Error ? error.message : String(error)}\n`);
-    return 1;
+    return EXIT_ERROR;
   }
 }
 
