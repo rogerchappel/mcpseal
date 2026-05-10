@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "project-files": {
+      "command": "/usr/local/bin/mcp-server-filesystem",
+      "args": ["/Users/example/project"],
+      "env": {
+        "LOG_LEVEL": "info"
+      },
+      "tools": [
+        {
+          "name": "read_project_file",
+          "description": "Read files from the configured project root only; no writes or network access."
+        }
+      ]
+    }
+  }
+}
