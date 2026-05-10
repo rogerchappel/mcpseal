@@ -4,11 +4,11 @@
   "description": "Local-first MCP config risk linter for agent server definitions.",
   "type": "module",
   "bin": {
-    "mcpseal": "./dist/cli.js"
+    "mcpseal": "./dist/src/cli.js"
   },
-  "main": "./dist/index.js",
+  "main": "./dist/src/index.js",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/src/index.js"
   },
   "files": [
     "dist",

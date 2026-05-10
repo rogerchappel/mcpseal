@@ -7,6 +7,6 @@ Try:
 
 ```bash
 npm run build
-node dist/cli.js scan examples/risky-mcp.json
-node dist/cli.js check examples/risky-mcp.json --fail-on secret-env,broad-fs
+node dist/src/cli.js scan examples/risky-mcp.json
+node dist/src/cli.js check examples/risky-mcp.json --fail-on secret-env,broad-fs
 ```

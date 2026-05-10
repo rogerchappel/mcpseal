@@ -13,8 +13,8 @@ MCP configs are powerful launch plans. A single server entry can grant an agent 
 ```bash
 npm install
 npm run build
-node dist/cli.js scan examples/risky-mcp.json
-node dist/cli.js check examples/risky-mcp.json --fail-on secret-env,broad-fs
+node dist/src/cli.js scan examples/risky-mcp.json
+node dist/src/cli.js check examples/risky-mcp.json --fail-on secret-env,broad-fs
 ```
 
 After installation from a package, use the binary directly:
@@ -83,8 +83,8 @@ mcpseal scan examples/risky-mcp.json --no-redact
 Checked-in fixtures live under [`examples/`](examples/):
 
 ```bash
-node dist/cli.js scan examples/risky-mcp.json --out .tmp/risky.md
-node dist/cli.js check examples/safer-mcp.json --fail-on secret-env,broad-fs,risky-command
+node dist/src/cli.js scan examples/risky-mcp.json --out .tmp/risky.md
+node dist/src/cli.js check examples/safer-mcp.json --fail-on secret-env,broad-fs,risky-command
 ```
 
 ## Development
