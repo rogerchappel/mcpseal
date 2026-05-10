@@ -53,6 +53,9 @@ Valid `--fail-on` categories:
 
 ## What MCPSeal checks
 
+See [docs/RULES.md](docs/RULES.md) for the detailed rule catalog.
+
+
 - **Risky commands**: shells/interpreters, package runners, network/destructive command tokens.
 - **Secret env**: keys or values that look like tokens, passwords, private keys, or cloud credentials.
 - **Broad filesystem**: root/home/tmp-style access, broad mount flags, Docker socket references.
