@@ -14,7 +14,8 @@
     "dist",
     "examples",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "schemas"
   ],
   "scripts": {
     "build": "tsc",
