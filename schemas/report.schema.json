@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rogerchappel/mcpseal/schemas/report.schema.json",
+  "title": "MCPSeal report",
+  "type": "object",
+  "required": ["tool", "version", "generatedAt", "targets", "summary", "findings"],
+  "properties": {
+    "tool": { "const": "mcpseal" },
+    "version": { "type": "string" },
+    "generatedAt": { "type": "string" },
+    "targets": { "type": "array" },
+    "summary": { "type": "object" },
+    "findings": { "type": "array" }
+  },
+  "additionalProperties": false
+}
