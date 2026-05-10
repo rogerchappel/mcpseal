@@ -1,0 +1,21 @@
+{
+  "name": "mcpseal",
+  "version": 1,
+  "commands": {
+    "install": "npm ci",
+    "test": "npm test",
+    "check": "npm run check",
+    "build": "npm run build",
+    "smoke": "npm run smoke",
+    "validate": "bash scripts/validate.sh"
+  },
+  "ciGate": {
+    "command": "mcpseal check . --fail-on secret-env,broad-fs,risky-command",
+    "expectedFailureExitCode": 2
+  },
+  "safety": {
+    "network": "none during scan/check",
+    "redactionDefault": true,
+    "mutatesInputs": false
+  }
+}
