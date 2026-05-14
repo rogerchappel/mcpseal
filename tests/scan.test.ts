@@ -28,3 +28,11 @@ test('markdown output is stable and useful', async () => {
   assert.match(markdown, /## Findings/);
   assert.match(markdown, /1970-01-01T00:00:00.000Z/);
 });
+
+
+test('scanTargets detects broad docker bind mount sources', () => {
+  const parsed = { mcpServers: { dockerized: { command: 'docker', args: ['run', '-v', '/:/host:ro', 'example/mcp'] } } };
+  const report = scanTargets([{ label: 'inline', absolutePath: 'inline', raw: JSON.stringify(parsed), parsed }], { redact: true, failOn: ['broad-fs'] });
+  assert.equal(report.summary.byCategory['broad-fs'], 1);
+  assert.equal(report.summary.failedGates.join(','), 'broad-fs');
+});

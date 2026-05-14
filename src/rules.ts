@@ -55,12 +55,14 @@ function filesystemFindings(server: McpServer, targetPath: string, index: number
   for (let i = 0; i < args.length; i += 1) {
     const arg = args[i] ?? '';
     const next = args[i + 1] ?? '';
-    const values = arg.includes('=') ? [arg.split('=').slice(1).join('=')] : broadArgFlags.has(arg) ? [next] : [arg];
+    const consumesNext = broadArgFlags.has(arg) && !arg.includes('=');
+    const values = arg.includes('=') ? [arg.split('=').slice(1).join('=')] : consumesNext ? [next] : [arg];
     for (const value of values) {
-      if (isBroadPath(value)) {
+      if (isBroadPath(value) || isBroadBindMount(value)) {
         findings.push(makeFinding('broad-fs', 'high', 'Broad filesystem access', `Server '${server.name}' appears to grant broad filesystem access via '${arg}'.`, targetPath, index, 'args', redactValue([arg, next].filter(Boolean).join(' '), redact), 'Limit MCP filesystem roots to the smallest project directory required.'));
       }
     }
+    if (consumesNext) i += 1;
     if (/\/var\/run\/docker\.sock|docker\.sock/.test(arg)) {
       findings.push(makeFinding('broad-fs', 'critical', 'Docker socket access', `Server '${server.name}' references the Docker socket, which can imply host-level control.`, targetPath, index, 'args', redactValue(arg, redact), 'Avoid exposing Docker socket access unless this server is fully trusted.'));
     }
@@ -87,6 +89,12 @@ function toolDescriptionFindings(server: McpServer, targetPath: string, index: n
 function isBroadPath(value: string): boolean {
   const cleaned = value.trim().replace(/^['"]|['"]$/g, '');
   return broadFsTokens.some((pattern) => pattern.test(cleaned));
+}
+
+function isBroadBindMount(value: string): boolean {
+  const cleaned = value.trim().replace(/^['"]|['"]$/g, '');
+  const [source] = cleaned.split(':');
+  return Boolean(source && source !== cleaned && isBroadPath(source));
 }
 
 function basename(command: string): string {
