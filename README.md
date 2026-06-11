@@ -106,3 +106,11 @@ bash scripts/validate.sh
 ## Limitations
 
 MCPSeal is a linter, not a sandbox. It uses deterministic heuristics and cannot prove a server is safe. Treat findings as review prompts, keep server packages pinned, and combine this with normal code review and OS-level permission boundaries.
+
+## Package contents
+
+The npm package allowlist includes the runtime files plus the public support
+documents needed for release review: `README.md`, `LICENSE`, `SECURITY.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`.
+Run `npm run package:smoke` or `npm pack --dry-run` before publishing to
+confirm those files are still present in the tarball.
+
