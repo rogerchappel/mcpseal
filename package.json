@@ -15,7 +15,11 @@
     "examples",
     "README.md",
     "LICENSE",
-    "schemas"
+    "schemas",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md"
   ],
   "scripts": {
     "build": "tsc",
@@ -40,5 +44,13 @@
   "devDependencies": {
     "@types/node": "^22.15.18",
     "typescript": "^5.8.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rogerchappel/mcpseal.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rogerchappel/mcpseal/issues"
+  },
+  "homepage": "https://github.com/rogerchappel/mcpseal#readme"
 }
