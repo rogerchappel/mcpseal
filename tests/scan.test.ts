@@ -36,3 +36,19 @@ test('scanTargets detects broad docker bind mount sources', () => {
   assert.equal(report.summary.byCategory['broad-fs'], 1);
   assert.equal(report.summary.failedGates.join(','), 'broad-fs');
 });
+
+test('scanTargets detects broad docker long-form bind mount sources', () => {
+  for (const mount of ['type=bind,source=/,target=/host', 'type=bind,src=/home,target=/host']) {
+    const parsed = { mcpServers: { dockerized: { command: 'docker', args: ['run', '--mount', mount, 'example/mcp'] } } };
+    const report = scanTargets([{ label: 'inline', absolutePath: 'inline', raw: JSON.stringify(parsed), parsed }], { redact: true, failOn: ['broad-fs'] });
+    assert.equal(report.summary.byCategory['broad-fs'], 1, mount);
+    assert.equal(report.summary.failedGates.join(','), 'broad-fs', mount);
+  }
+});
+
+test('scanTargets allows project directories in docker long-form bind mounts', () => {
+  const parsed = { mcpServers: { dockerized: { command: 'docker', args: ['run', '--mount=type=bind,source=/workspace/project,target=/app', 'example/mcp'] } } };
+  const report = scanTargets([{ label: 'inline', absolutePath: 'inline', raw: JSON.stringify(parsed), parsed }], { redact: true, failOn: ['broad-fs'] });
+  assert.equal(report.summary.byCategory['broad-fs'], 0);
+  assert.deepEqual(report.summary.failedGates, []);
+});
