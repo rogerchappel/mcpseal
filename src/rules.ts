@@ -94,7 +94,15 @@ function isBroadPath(value: string): boolean {
 function isBroadBindMount(value: string): boolean {
   const cleaned = value.trim().replace(/^['"]|['"]$/g, '');
   const [source] = cleaned.split(':');
-  return Boolean(source && source !== cleaned && isBroadPath(source));
+  if (source && source !== cleaned && isBroadPath(source)) return true;
+
+  const options = new Map(cleaned.split(',').map((option) => {
+    const [key, ...parts] = option.split('=');
+    return [key?.trim().toLowerCase() ?? '', parts.join('=').trim()];
+  }));
+  if (options.get('type') !== 'bind') return false;
+  const longFormSource = options.get('source') ?? options.get('src');
+  return Boolean(longFormSource && isBroadPath(longFormSource));
 }
 
 function basename(command: string): string {
