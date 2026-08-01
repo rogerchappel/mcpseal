@@ -38,6 +38,8 @@ mcpseal scan <file-or-dir...> --out report.md
 mcpseal scan <file-or-dir...> --format json
 ```
 
+The `--out` path must not resolve to a scanned input file. MCPSeal rejects the command before writing so config files cannot be replaced by reports.
+
 ### `check`
 
 Produces JSON by default and exits with code `2` when an explicit gate fails:
