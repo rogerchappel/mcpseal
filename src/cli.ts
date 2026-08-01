@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, realpath, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { EXIT_ERROR, EXIT_GATE_FAILED, EXIT_OK } from './exit-codes.js';
 import { loadTargets } from './load.js';
@@ -24,6 +24,7 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
     const report = scanTargets(targets, { redact: options.redact, failOn });
     const rendered = options.format === 'json' ? renderJson(report) : renderMarkdown(report);
     if (options.out) {
+      await assertOutputIsNotInput(options.out, targets.map((target) => target.absolutePath));
       await mkdir(path.dirname(path.resolve(options.out)), { recursive: true });
       await writeFile(options.out, rendered, 'utf8');
     } else {
@@ -33,6 +34,23 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
   } catch (error) {
     process.stderr.write(`mcpseal: ${error instanceof Error ? error.message : String(error)}\n`);
     return EXIT_ERROR;
+  }
+}
+
+async function assertOutputIsNotInput(output: string, inputs: string[]): Promise<void> {
+  const outputPath = await canonicalPath(output);
+  const inputPaths = await Promise.all(inputs.map(canonicalPath));
+  if (inputPaths.includes(outputPath)) {
+    throw new Error(`Refusing to overwrite scanned input with --out: ${output}`);
+  }
+}
+
+async function canonicalPath(file: string): Promise<string> {
+  try {
+    return await realpath(file);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return path.resolve(file);
+    throw error;
   }
 }
 
@@ -71,7 +89,7 @@ function parseFormat(value: string): 'markdown' | 'json' {
 }
 
 function helpText(): string {
-  return `mcpseal ${VERSION}\n\nUsage:\n  mcpseal scan <file-or-dir...> [--out report.md] [--format markdown|json] [--fail-on categories]\n  mcpseal check <file-or-dir...> --fail-on secret-env,broad-fs\n\nCategories: risky-command, secret-env, broad-fs, tool-description, config-shape\nDefaults: markdown for scan, json for check, redaction enabled.\n`;
+  return `mcpseal ${VERSION}\n\nUsage:\n  mcpseal scan <file-or-dir...> [--out report.md] [--format markdown|json] [--fail-on categories]\n  mcpseal check <file-or-dir...> --fail-on secret-env,broad-fs\n\nCategories: risky-command, secret-env, broad-fs, tool-description, config-shape\nDefaults: markdown for scan, json for check, redaction enabled.\n--out must not resolve to a scanned input file.\n`;
 }
 
 

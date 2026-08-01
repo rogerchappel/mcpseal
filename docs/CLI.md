@@ -8,6 +8,7 @@ mcpseal scan <file-or-dir...> [--out path] [--format markdown|json] [--fail-on c
 
 - Default format: Markdown.
 - Exit code: `0` unless an explicit `--fail-on` category is found.
+- `--out` must be distinct from every scanned config file, including files discovered through a directory.
 
 ## `mcpseal check`
 
