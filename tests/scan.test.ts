@@ -20,6 +20,34 @@ test('safer fixture stays below default risk checks', async () => {
   assert.equal(report.summary.failedGates.length, 0);
 });
 
+test('scanTargets reports invalid object-map entries and scans valid siblings', () => {
+  const parsed = { mcpServers: { good: { command: 'fixed-bin' }, bad: 'not-an-object' } };
+  const report = scanTargets([{ label: 'mixed.json', absolutePath: 'mixed.json', raw: JSON.stringify(parsed), parsed }], { redact: true, failOn: ['config-shape'] });
+  assert.equal(report.targets[0].serverCount, 1);
+  assert.equal(report.summary.byCategory['config-shape'], 1);
+  assert.deepEqual(report.summary.failedGates, ['config-shape']);
+  assert.equal(report.findings[0].path, 'mixed.json#mcpServers.bad');
+});
+
+test('scanTargets reports every invalid array entry and scans valid siblings', () => {
+  const parsed = { servers: [{ name: 'good', command: 'fixed-bin' }, null, 'bad'] };
+  const report = scanTargets([{ label: 'mixed.json', absolutePath: 'mixed.json', raw: JSON.stringify(parsed), parsed }], { redact: true, failOn: ['config-shape'] });
+  assert.equal(report.targets[0].serverCount, 1);
+  assert.deepEqual(report.findings.map((finding) => finding.path), ['mixed.json#servers[1]', 'mixed.json#servers[2]']);
+});
+
+test('scanTargets accepts all-valid object-map and array server entries', () => {
+  for (const parsed of [
+    { mcpServers: { first: { command: 'one' }, second: { command: 'two' } } },
+    { servers: [{ command: 'one' }, { name: 'second', command: 'two' }] }
+  ]) {
+    const report = scanTargets([{ label: 'valid.json', absolutePath: 'valid.json', raw: JSON.stringify(parsed), parsed }], { redact: true, failOn: ['config-shape'] });
+    assert.equal(report.targets[0].serverCount, 2);
+    assert.equal(report.summary.byCategory['config-shape'], 0);
+    assert.deepEqual(report.summary.failedGates, []);
+  }
+});
+
 test('markdown output is stable and useful', async () => {
   const raw = await readFile('examples/risky-mcp.json', 'utf8');
   const report = scanTargets([{ label: 'examples/risky-mcp.json', absolutePath: 'examples/risky-mcp.json', raw, parsed: JSON.parse(raw) }], { redact: true, failOn: [] });

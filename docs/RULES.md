@@ -20,4 +20,6 @@ Flags missing or very short tool descriptions and prompt-risk phrases such as at
 
 ## config-shape
 
-Flags invalid JSON, missing commands, and inputs that do not contain recognizable MCP server definitions.
+Flags invalid JSON, missing commands, malformed server entries, and inputs that do not contain recognizable MCP server definitions.
+
+Supported server collections are object maps and arrays under `mcpServers`, `servers`, `mcp.servers`, or `experimental.mcpServers`. Each collection entry must be an object. Invalid entries receive a path-specific finding (such as `mcpServers.bad` or `servers[1]`), and valid siblings are still checked by the other rules.

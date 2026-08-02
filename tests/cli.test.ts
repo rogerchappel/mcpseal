@@ -18,6 +18,18 @@ test('CLI check fails when requested gate has findings', () => {
   assert.match(result.stdout, /"failedGates"/);
 });
 
+test('CLI check fails the config-shape gate for a mixed-validity server map', () => {
+  const dir = mkdtempSync(path.join(tmpdir(), 'mcpseal-cli-'));
+  const input = path.join(dir, 'mixed.json');
+  writeFileSync(input, '{"mcpServers":{"good":{"command":"fixed-bin"},"bad":"not-an-object"}}\n');
+
+  const result = spawnSync(process.execPath, [path.resolve('dist/src/cli.js'), 'check', input, '--fail-on', 'config-shape'], { encoding: 'utf8' });
+
+  assert.equal(result.status, 2, result.stdout + result.stderr);
+  assert.match(result.stdout, /"config-shape"/);
+  assert.match(result.stdout, /mcpServers\.bad/);
+});
+
 test('CLI refuses direct input as output without changing it', () => {
   const dir = mkdtempSync(path.join(tmpdir(), 'mcpseal-cli-'));
   const input = path.join(dir, 'config.json');

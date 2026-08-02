@@ -67,6 +67,8 @@ See [docs/RULES.md](docs/RULES.md) for the detailed rule catalog.
 - **Tool descriptions**: missing/weak descriptions or prompt-risk language.
 - **Config shape**: invalid JSON, missing commands, or files without recognizable server definitions.
 
+Server collections may be object maps (for example, `mcpServers.name`) or arrays (for example, `servers[0]`). Every entry must be an object. MCPSeal reports malformed entries at their config path while continuing to scan valid siblings.
+
 ## Redaction
 
 Redaction is enabled by default. Secret-looking environment values and common token formats are replaced with `[REDACTED]` in output.
