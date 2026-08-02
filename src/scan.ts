@@ -1,4 +1,4 @@
-import { extractServers } from './extract.js';
+import { extractServerConfig } from './extract.js';
 import { analyzeServer } from './rules.js';
 import { categories, severities, type Finding, type FindingCategory, type ScanOptions, type ScanReport, type ScanTarget, type Severity } from './types.js';
 
@@ -22,9 +22,18 @@ export function scanTargets(targets: ScanTarget[], options: ScanOptions): ScanRe
       targetSummaries.push({ path: target.label, serverCount: 0 });
       continue;
     }
-    const servers = extractServers(target.parsed);
+    const { servers, invalidEntries } = extractServerConfig(target.parsed);
     targetSummaries.push({ path: target.label, serverCount: servers.length });
-    if (servers.length === 0) {
+    invalidEntries.forEach((entry) => findings.push({
+      id: `config-shape-${slug(target.label)}-${slug(entry.path)}`,
+      category: 'config-shape',
+      severity: 'medium',
+      title: 'Invalid MCP server entry',
+      message: `${entry.path} must be an object, not ${describeValue(entry.value)}.`,
+      path: `${target.label}#${entry.path}`,
+      recommendation: 'Replace the entry with an MCP server object or remove it.'
+    }));
+    if (servers.length === 0 && invalidEntries.length === 0) {
       findings.push({
         id: `config-shape-${slug(target.label)}-no-servers`,
         category: 'config-shape',
@@ -52,6 +61,12 @@ export function scanTargets(targets: ScanTarget[], options: ScanOptions): ScanRe
     },
     findings
   };
+}
+
+function describeValue(value: unknown): string {
+  if (value === null) return 'null';
+  if (Array.isArray(value)) return 'an array';
+  return `a ${typeof value}`;
 }
 
 function isParseError(value: unknown): value is { __mcpsealParseError: string } {
