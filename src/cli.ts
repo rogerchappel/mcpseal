@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { mkdir, realpath, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { EXIT_ERROR, EXIT_GATE_FAILED, EXIT_OK } from './exit-codes.js';
 import { loadTargets } from './load.js';
 import { renderJson, renderMarkdown } from './render.js';
@@ -93,9 +94,17 @@ function helpText(): string {
 }
 
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] && await isMain(process.argv[1])) {
   main().then((code) => process.exit(code)).catch((error) => {
     process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
     process.exit(1);
   });
+}
+
+async function isMain(argvPath: string): Promise<boolean> {
+  try {
+    return await realpath(argvPath) === fileURLToPath(import.meta.url);
+  } catch {
+    return false;
+  }
 }
