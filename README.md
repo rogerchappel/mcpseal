@@ -123,10 +123,15 @@ MCPSeal is a linter, not a sandbox. It uses deterministic heuristics and cannot 
 
 ## Package contents
 
-The npm package allowlist includes the runtime files plus the public support
-documents needed for release review: `README.md`, `LICENSE`, `SECURITY.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`.
-Run `npm run package:smoke` or `npm pack --dry-run` before publishing to
-confirm those files are still present in the tarball.
+The npm package allowlist includes compiled runtime files, schemas, examples,
+and the public support documents needed for release review: `README.md`,
+`LICENSE`, `SECURITY.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, and
+`CODE_OF_CONDUCT.md`.
+
+Run `npm run package:smoke` before publishing. It builds and packs the exact
+tarball, rejects test artifacts or missing public files, installs the tarball
+in a disposable consumer project, runs the installed `mcpseal` binary against
+a packaged example, and imports the public library entrypoint.
 
 ## Verification
 
