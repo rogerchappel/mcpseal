@@ -21,7 +21,14 @@ mcpseal check <file-or-dir...> --fail-on secret-env,broad-fs
 
 ## Supported server entry shapes
 
-MCPSeal recognizes object maps and arrays under `mcpServers`, `servers`, `mcp.servers`, and `experimental.mcpServers`. Each entry in those collections must be an object. Invalid entries produce path-specific `config-shape` findings while valid entries in the same collection are still scanned.
+MCPSeal recognizes object maps and arrays under `mcpServers`, `servers`, `mcp.servers`, and `experimental.mcpServers`. Each entry in those collections must be an object with these supported fields:
+
+- `command`: a string (required for a launchable server).
+- `args`: a string or an array containing only strings.
+- `env`: an object.
+- `tools`: an array containing only objects.
+
+Invalid entries and fields produce path-specific `config-shape` findings, including the index of each malformed `args` or `tools` member. Valid fields and sibling servers continue through the other risk rules.
 
 ## Exit codes
 
