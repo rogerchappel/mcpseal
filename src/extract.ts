@@ -58,7 +58,7 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 export function asStringArray(value: unknown): string[] {
-  if (Array.isArray(value)) return value.map((item) => String(item));
+  if (Array.isArray(value)) return value.filter((item): item is string => typeof item === 'string');
   if (typeof value === 'string') return [value];
   return [];
 }

@@ -72,7 +72,7 @@ test('scanTargets reports malformed server fields at exact paths while scanning 
     ]
   );
   assert.equal(report.summary.byCategory['broad-fs'], 2);
-  assert.equal(report.summary.byCategory['risky-command'], 3);
+  assert.equal(report.summary.byCategory['risky-command'], 2);
   assert.deepEqual(report.summary.failedGates, ['risky-command', 'broad-fs', 'config-shape']);
 });
 

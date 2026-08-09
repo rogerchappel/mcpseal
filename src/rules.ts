@@ -10,11 +10,51 @@ const broadArgFlags = new Set(['--filesystem', '--fs', '--root', '--workspace', 
 
 export function analyzeServer(server: McpServer, targetPath: string, index: number, redact: boolean): Finding[] {
   return [
+    ...serverShapeFindings(server, targetPath, index),
     ...commandFindings(server, targetPath, index, redact),
     ...envFindings(server, targetPath, index, redact),
     ...filesystemFindings(server, targetPath, index, redact),
     ...toolDescriptionFindings(server, targetPath, index, redact)
   ];
+}
+
+function serverShapeFindings(server: McpServer, targetPath: string, index: number): Finding[] {
+  const findings: Finding[] = [];
+  if (server.command !== undefined && typeof server.command !== 'string') {
+    findings.push(invalidFieldFinding(server, targetPath, index, 'command', 'a string', server.command));
+  }
+  if (server.args !== undefined && typeof server.args !== 'string' && !Array.isArray(server.args)) {
+    findings.push(invalidFieldFinding(server, targetPath, index, 'args', 'a string or an array of strings', server.args));
+  } else if (Array.isArray(server.args)) {
+    server.args.forEach((arg, argIndex) => {
+      if (typeof arg !== 'string') findings.push(invalidFieldFinding(server, targetPath, index, `args[${argIndex}]`, 'a string', arg));
+    });
+  }
+  if (server.env !== undefined && !isRecord(server.env)) {
+    findings.push(invalidFieldFinding(server, targetPath, index, 'env', 'an object', server.env));
+  }
+  if (server.tools !== undefined && !Array.isArray(server.tools)) {
+    findings.push(invalidFieldFinding(server, targetPath, index, 'tools', 'an array of objects', server.tools));
+  } else if (Array.isArray(server.tools)) {
+    server.tools.forEach((tool, toolIndex) => {
+      if (!isRecord(tool)) findings.push(invalidFieldFinding(server, targetPath, index, `tools[${toolIndex}]`, 'an object', tool));
+    });
+  }
+  return findings;
+}
+
+function invalidFieldFinding(server: McpServer, targetPath: string, index: number, field: string, expected: string, value: unknown): Finding {
+  return makeFinding(
+    'config-shape',
+    'medium',
+    'Invalid MCP server field',
+    `Server '${server.name}' field '${field}' must be ${expected}, not ${describeValue(value)}.`,
+    targetPath,
+    index,
+    field,
+    undefined,
+    `Replace '${field}' with ${expected} or remove the field.`
+  );
 }
 
 function commandFindings(server: McpServer, targetPath: string, index: number, redact: boolean): Finding[] {
@@ -107,6 +147,12 @@ function isBroadBindMount(value: string): boolean {
 
 function basename(command: string): string {
   return command.split(/[\\/]/).pop()?.toLowerCase() ?? command.toLowerCase();
+}
+
+function describeValue(value: unknown): string {
+  if (value === null) return 'null';
+  if (Array.isArray(value)) return 'an array';
+  return `a ${typeof value}`;
 }
 
 function makeFinding(category: Finding['category'], severity: Finding['severity'], title: string, message: string, targetPath: string, serverIndex: number, field: string, evidence: string | undefined, recommendation: string): Finding {
