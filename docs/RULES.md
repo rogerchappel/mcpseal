@@ -22,4 +22,4 @@ Flags missing or very short tool descriptions and prompt-risk phrases such as at
 
 Flags invalid JSON, missing commands, malformed server entries, and inputs that do not contain recognizable MCP server definitions.
 
-Supported server collections are object maps and arrays under `mcpServers`, `servers`, `mcp.servers`, or `experimental.mcpServers`. Each collection entry must be an object. Invalid entries receive a path-specific finding (such as `mcpServers.bad` or `servers[1]`), and valid siblings are still checked by the other rules.
+Supported server collections are object maps and arrays under `mcpServers`, `servers`, `mcp.servers`, or `experimental.mcpServers`. Each collection entry must be an object. Within an entry, `command` must be a string, `args` may be a string or an array of strings, `env` must be an object, and `tools` must be an array of objects. Invalid entries and fields receive path-specific findings (such as `mcpServers.bad`, `servers[1]`, or `servers[0].args[2]`), and valid fields and siblings are still checked by the other rules.
