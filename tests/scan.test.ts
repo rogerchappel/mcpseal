@@ -48,6 +48,51 @@ test('scanTargets accepts all-valid object-map and array server entries', () => 
   }
 });
 
+test('scanTargets reports malformed server fields at exact paths while scanning valid args and siblings', () => {
+  const parsed = {
+    mcpServers: {
+      mixed: {
+        command: 'node',
+        args: ['server.js', 7, '--filesystem', '/', { unexpected: true }],
+        env: [],
+        tools: [{ name: 'safe', description: 'A sufficiently detailed tool description.' }, 'invalid']
+      },
+      sibling: { command: 'docker', args: ['run', '--mount=type=bind,source=/,target=/host', 'example/mcp'] }
+    }
+  };
+  const report = scanTargets([{ label: 'mixed.json', absolutePath: 'mixed.json', raw: JSON.stringify(parsed), parsed }], { redact: true, failOn: ['config-shape', 'broad-fs', 'risky-command'] });
+
+  assert.deepEqual(
+    report.findings.filter((finding) => finding.category === 'config-shape').map((finding) => finding.path),
+    [
+      'mixed.json#servers[0].args[1]',
+      'mixed.json#servers[0].args[4]',
+      'mixed.json#servers[0].env',
+      'mixed.json#servers[0].tools[1]'
+    ]
+  );
+  assert.equal(report.summary.byCategory['broad-fs'], 2);
+  assert.equal(report.summary.byCategory['risky-command'], 3);
+  assert.deepEqual(report.summary.failedGates, ['risky-command', 'broad-fs', 'config-shape']);
+});
+
+test('scanTargets accepts documented server field shapes', () => {
+  const parsed = {
+    mcpServers: {
+      valid: {
+        command: 'fixed-bin',
+        args: '--version',
+        env: { MODE: 'safe' },
+        tools: [{ name: 'status', description: 'Returns the current server status.' }]
+      }
+    }
+  };
+  const report = scanTargets([{ label: 'valid.json', absolutePath: 'valid.json', raw: JSON.stringify(parsed), parsed }], { redact: true, failOn: ['config-shape'] });
+
+  assert.equal(report.summary.byCategory['config-shape'], 0);
+  assert.deepEqual(report.summary.failedGates, []);
+});
+
 test('markdown output is stable and useful', async () => {
   const raw = await readFile('examples/risky-mcp.json', 'utf8');
   const report = scanTargets([{ label: 'examples/risky-mcp.json', absolutePath: 'examples/risky-mcp.json', raw, parsed: JSON.parse(raw) }], { redact: true, failOn: [] });

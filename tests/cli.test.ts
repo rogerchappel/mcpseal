@@ -30,6 +30,18 @@ test('CLI check fails the config-shape gate for a mixed-validity server map', ()
   assert.match(result.stdout, /mcpServers\.bad/);
 });
 
+test('CLI check fails the config-shape gate for malformed args members', () => {
+  const dir = mkdtempSync(path.join(tmpdir(), 'mcpseal-cli-'));
+  const input = path.join(dir, 'malformed-args.json');
+  writeFileSync(input, '{"mcpServers":{"demo":{"command":"node","args":[1,{"bad":true}],"env":{},"tools":[]}}}\n');
+
+  const result = spawnSync(process.execPath, [path.resolve('dist/src/cli.js'), 'check', input, '--fail-on', 'config-shape'], { encoding: 'utf8' });
+
+  assert.equal(result.status, 2, result.stdout + result.stderr);
+  assert.match(result.stdout, /servers\[0\]\.args\[0\]/);
+  assert.match(result.stdout, /servers\[0\]\.args\[1\]/);
+});
+
 test('CLI refuses direct input as output without changing it', () => {
   const dir = mkdtempSync(path.join(tmpdir(), 'mcpseal-cli-'));
   const input = path.join(dir, 'config.json');
