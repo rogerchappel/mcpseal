@@ -27,7 +27,9 @@
     "test": "npm run build && node --test dist/tests/*.test.js",
     "smoke": "npm run build && bash scripts/smoke.sh",
     "package:smoke": "node scripts/package-smoke.mjs",
-    "release:check": "npm test && npm run check && npm run build && npm run smoke && npm run package:smoke"
+    "release:tag-check": "node scripts/check-release-tag.mjs",
+    "test:release-tag": "node --test scripts/check-release-tag.test.mjs",
+    "release:check": "npm test && npm run test:release-tag && npm run check && npm run build && npm run smoke && npm run package:smoke"
   },
   "keywords": [
     "mcp",
