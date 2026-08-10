@@ -138,3 +138,9 @@ a packaged example, and imports the public library entrypoint.
 Run the release-readiness checks that match this package before publishing or opening a release PR.
 
 - `npm run release:check` - run the full release gate
+
+Release tags must exactly equal `v` followed by the version in `package.json`
+(for example, package version `0.1.0` must be released from tag `v0.1.0`). The
+tag release workflow verifies this relationship before packing or creating a
+GitHub release. You can run the same guard locally with
+`npm run release:tag-check -- v0.1.0 0.1.0`.
