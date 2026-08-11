@@ -27,6 +27,8 @@ jobs:
           registry-url: https://registry.npmjs.org
       - name: Install dependencies
         run: npm ci
+      - name: Verify release tag matches package version
+        run: npm run release:tag-check -- "${GITHUB_REF_NAME}" "$(node -p 'require(\"./package.json\").version')"
       - name: Install ReleaseBox
         run: |
           set -euo pipefail
