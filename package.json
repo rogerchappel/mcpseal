@@ -2,9 +2,13 @@
   "name": "mcpseal",
   "version": "0.1.0",
   "description": "Local-first MCP config risk linter for agent server definitions.",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "type": "module",
   "bin": {
-    "mcpseal": "./dist/src/cli.js"
+    "mcpseal": "dist/src/cli.js"
   },
   "main": "./dist/src/index.js",
   "exports": {
@@ -29,7 +33,8 @@
     "package:smoke": "node scripts/package-smoke.mjs",
     "release:tag-check": "node scripts/check-release-tag.mjs",
     "test:release-tag": "node --test scripts/check-release-tag.test.mjs",
-    "release:check": "npm test && npm run test:release-tag && npm run check && npm run build && npm run smoke && npm run package:smoke"
+    "test:publish-config": "node --test scripts/check-publish-config.test.mjs && node scripts/check-publish-config.mjs",
+    "release:check": "npm test && npm run test:release-tag && npm run test:publish-config && npm run check && npm run build && npm run smoke && npm run package:smoke"
   },
   "keywords": [
     "mcp",
