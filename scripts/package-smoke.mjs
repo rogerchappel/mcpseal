@@ -61,6 +61,7 @@ try {
 
   const installedPackage = JSON.parse(await readFile(path.join(consumer, 'node_modules', 'mcpseal', 'package.json'), 'utf8'));
   assert.equal(installedPackage.name, 'mcpseal');
+  assert.deepEqual(installedPackage.bin, { mcpseal: 'dist/src/cli.js' });
   console.log(`mcpseal package smoke ok (${packedPaths.size} files)`);
 } finally {
   await rm(workspace, { recursive: true, force: true });
