@@ -27,6 +27,8 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Install npm with trusted publishing support
+        run: npm install --global npm@11
       - name: Install dependencies
         run: npm ci
       - name: Verify release tag contract
@@ -43,6 +45,8 @@ jobs:
         run: node /tmp/releasebox/bin/releasebox.js check .
       - name: Run release checks
         run: npm run release:check
+      - name: Verify npm publication without publishing
+        run: npm publish --dry-run
       - name: Release notes preview
         run: |
           node /tmp/releasebox/bin/releasebox.js notes . > release-notes-preview.md
