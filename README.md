@@ -20,6 +20,7 @@ node dist/src/cli.js check examples/risky-mcp.json --fail-on secret-env,broad-fs
 After installation from a package, use the binary directly:
 
 ```bash
+npm install --global mcpseal
 mcpseal scan ~/.config/my-agent/mcp.json --out mcpseal-report.md
 mcpseal check ./examples/risky-mcp.json --fail-on secret-env,broad-fs,risky-command
 ```
@@ -133,11 +134,19 @@ tarball, rejects test artifacts or missing public files, installs the tarball
 in a disposable consumer project, runs the installed `mcpseal` binary against
 a packaged example, and imports the public library entrypoint.
 
+Releases are published by pushing a version tag. The `Release` workflow checks
+that the tag matches `package.json`, runs the complete release gate, publishes
+the public `mcpseal` package to npm with provenance through npm trusted
+publishing, and only then creates the GitHub release. The npm package's trusted
+publisher must point to `rogerchappel/mcpseal` and `.github/workflows/release.yml`.
+No long-lived npm token is used by this workflow.
+
 ## Verification
 
 Run the release-readiness checks that match this package before publishing or opening a release PR.
 
 - `npm run release:check` - run the full release gate
+- `npm publish --dry-run` - exercise npm's pack and public-publish configuration without publishing
 
 Release tags must exactly equal `v` followed by the version in `package.json`
 (for example, package version `0.1.0` must be released from tag `v0.1.0`). The
