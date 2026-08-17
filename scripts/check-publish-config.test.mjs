@@ -6,6 +6,7 @@ const validPackage = {
   name: 'mcpseal',
   publishConfig: { access: 'public', provenance: true },
 };
+const validReleasebox = { release: { publishNpm: true } };
 const validWorkflow = `
 permissions:
   id-token: write
@@ -15,19 +16,26 @@ steps:
 `;
 
 test('accepts public trusted publishing before GitHub release creation', () => {
-  assert.doesNotThrow(() => checkPublishConfig(validPackage, validWorkflow));
+  assert.doesNotThrow(() => checkPublishConfig(validPackage, validReleasebox, validWorkflow));
 });
 
 test('rejects missing public package metadata', () => {
   assert.throws(
-    () => checkPublishConfig({ ...validPackage, publishConfig: { provenance: true } }, validWorkflow),
+    () => checkPublishConfig({ ...validPackage, publishConfig: { provenance: true } }, validReleasebox, validWorkflow),
     /publishConfig\.access must be public/,
+  );
+});
+
+test('rejects ReleaseBox metadata with npm publishing disabled', () => {
+  assert.throws(
+    () => checkPublishConfig(validPackage, { release: { publishNpm: false } }, validWorkflow),
+    /releasebox release\.publishNpm must be enabled/,
   );
 });
 
 test('rejects GitHub release creation before npm publication', () => {
   assert.throws(
-    () => checkPublishConfig(validPackage, validWorkflow.replace('npm publish\n  - run: gh release create', 'gh release create\n  - run: npm publish')),
+    () => checkPublishConfig(validPackage, validReleasebox, validWorkflow.replace('npm publish\n  - run: gh release create', 'gh release create\n  - run: npm publish')),
     /npm publication must precede GitHub release creation/,
   );
 });
