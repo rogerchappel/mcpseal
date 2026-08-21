@@ -7,6 +7,21 @@ format and uses semantic versioning when versioned releases are published.
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-08-22
+
+### Changed
+
+- Reconciled package metadata with the versions already published to npm.
+- Added a release guard that rejects an npm version that is already published.
+
+## [0.1.1] - 2026-08-20
+
+### Fixed
+
+- Preserved the CLI executable and aligned trusted npm publishing metadata.
+
+## [0.1.0] - 2026-08-20
+
 ### Added
 
 - Initial project setup.
@@ -14,11 +29,7 @@ format and uses semantic versioning when versioned releases are published.
 - Deterministic Markdown and JSON reports.
 - Redaction, `--fail-on` gates, examples, tests, and smoke checks.
 
-## Release Links
-
-- Unreleased:
-  `https://github.com/rogerchappel/mcpseal/compare/...HEAD`
-- Latest release:
-  `https://github.com/rogerchappel/mcpseal/releases/latest`
-
-Replace placeholder links once the first release tag exists.
+[Unreleased]: https://github.com/rogerchappel/mcpseal/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/rogerchappel/mcpseal/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/rogerchappel/mcpseal/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/rogerchappel/mcpseal/releases/tag/v0.1.0
