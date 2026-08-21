@@ -31,6 +31,8 @@ jobs:
         run: npm ci
       - name: Verify release tag matches package version
         run: npm run release:tag-check -- "${GITHUB_REF_NAME}" "$(node -p 'require(\"./package.json\").version')"
+      - name: Verify package version is available on npm
+        run: npm run release:version-check
       - name: Install ReleaseBox
         run: |
           set -euo pipefail
