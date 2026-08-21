@@ -35,6 +35,8 @@ jobs:
         run: |
           PACKAGE_VERSION=$(node -p 'require("./package.json").version')
           npm run release:tag-check -- "v${PACKAGE_VERSION}" "${PACKAGE_VERSION}"
+      - name: Verify package version is available on npm
+        run: npm run release:version-check
       - name: Install ReleaseBox
         run: |
           set -euo pipefail
