@@ -2,10 +2,13 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { createServer } from 'node:http';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 
 const script = path.resolve('scripts/check-package-version-available.mjs');
+const packageMetadata = JSON.parse(await readFile('package.json', 'utf8'));
+const lockMetadata = JSON.parse(await readFile('package-lock.json', 'utf8'));
 
 async function withRegistry(metadata, callback) {
   const server = createServer((_request, response) => {
@@ -49,5 +52,16 @@ test('rejects a version already present in npm metadata', async () => {
     const result = await check(registry, '0.1.1');
     assert.equal(result.status, 1);
     assert.match(result.stderr, /mcpseal@0\.1\.1 is already published/);
+  });
+});
+
+test('guards the current package and lockfile version from republishing', async () => {
+  assert.equal(lockMetadata.version, packageMetadata.version);
+  assert.equal(lockMetadata.packages[''].version, packageMetadata.version);
+
+  await withRegistry({ versions: { [packageMetadata.version]: {} } }, async (registry) => {
+    const result = await check(registry, packageMetadata.version);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, new RegExp(`${packageMetadata.name}@${packageMetadata.version} is already published`));
   });
 });
