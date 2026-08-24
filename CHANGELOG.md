@@ -7,6 +7,14 @@ format and uses semantic versioning when versioned releases are published.
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-08-24
+
+### Changed
+
+- Reconciled package metadata with the latest version published to npm.
+- Added regression coverage tying the release availability guard to the
+  package and lockfile root versions.
+
 ## [0.1.2] - 2026-08-22
 
 ### Changed
@@ -29,7 +37,8 @@ format and uses semantic versioning when versioned releases are published.
 - Deterministic Markdown and JSON reports.
 - Redaction, `--fail-on` gates, examples, tests, and smoke checks.
 
-[Unreleased]: https://github.com/rogerchappel/mcpseal/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/rogerchappel/mcpseal/compare/v0.1.5...HEAD
+[0.1.5]: https://github.com/rogerchappel/mcpseal/compare/v0.1.2...v0.1.5
 [0.1.2]: https://github.com/rogerchappel/mcpseal/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/rogerchappel/mcpseal/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/rogerchappel/mcpseal/releases/tag/v0.1.0
