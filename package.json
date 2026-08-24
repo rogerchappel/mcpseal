@@ -1,6 +1,6 @@
 {
   "name": "mcpseal",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "description": "Local-first MCP config risk linter for agent server definitions.",
   "publishConfig": {
     "access": "public",
