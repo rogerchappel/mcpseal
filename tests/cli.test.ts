@@ -5,6 +5,21 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
+const packageMetadata = JSON.parse(readFileSync('package.json', 'utf8')) as { version: string };
+
+test('CLI identity and JSON reports match the package version', () => {
+  const version = spawnSync(process.execPath, ['dist/src/cli.js', '--version'], { encoding: 'utf8' });
+  const help = spawnSync(process.execPath, ['dist/src/cli.js', '--help'], { encoding: 'utf8' });
+  const report = spawnSync(process.execPath, ['dist/src/cli.js', 'scan', 'examples/risky-mcp.json', '--json'], { encoding: 'utf8' });
+
+  assert.equal(version.status, 0, version.stderr);
+  assert.equal(version.stdout.trim(), packageMetadata.version);
+  assert.equal(help.status, 0, help.stderr);
+  assert.match(help.stdout, new RegExp(`^mcpseal ${packageMetadata.version.replaceAll('.', '\\.')}$`, 'm'));
+  assert.equal(report.status, 0, report.stderr);
+  assert.equal((JSON.parse(report.stdout) as { version: string }).version, packageMetadata.version);
+});
+
 test('CLI scan prints markdown for checked-in fixture', () => {
   const result = spawnSync(process.execPath, ['dist/src/cli.js', 'scan', 'examples/risky-mcp.json'], { encoding: 'utf8' });
   assert.equal(result.status, 0, result.stderr);

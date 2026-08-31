@@ -148,8 +148,11 @@ Run the release-readiness checks that match this package before publishing or op
 - `npm run release:check` - run the full release gate
 - `npm publish --dry-run` - exercise npm's pack and public-publish configuration without publishing
 
+The release gate also verifies that the CLI version output, help banner, and
+generated JSON report all match the version declared in `package.json`.
+
 Release tags must exactly equal `v` followed by the version in `package.json`
-(for example, package version `0.1.0` must be released from tag `v0.1.0`). The
+(for example, package version `0.1.5` must be released from tag `v0.1.5`). The
 tag release workflow verifies this relationship before packing or creating a
 GitHub release. You can run the same guard locally with
-`npm run release:tag-check -- v0.1.0 0.1.0`.
+`npm run release:tag-check -- v0.1.5 0.1.5`.

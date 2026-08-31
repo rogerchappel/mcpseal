@@ -2,7 +2,7 @@ import { extractServerConfig } from './extract.js';
 import { analyzeServer } from './rules.js';
 import { categories, severities, type Finding, type FindingCategory, type ScanOptions, type ScanReport, type ScanTarget, type Severity } from './types.js';
 
-export const VERSION = '0.1.0';
+export const VERSION = '0.1.5';
 export const STABLE_GENERATED_AT = '1970-01-01T00:00:00.000Z';
 
 export function scanTargets(targets: ScanTarget[], options: ScanOptions): ScanReport {
