@@ -9,9 +9,12 @@ const validPackage = {
 const validReleasebox = { release: { publishNpm: true } };
 const validWorkflow = `
 permissions:
-  id-token: write
+  contents: read
 steps:
-  - run: npm publish
+  - name: Publish package to npm
+    permissions:
+      id-token: write
+    run: npm publish
   - run: gh release create
 `;
 
@@ -31,6 +34,12 @@ test('rejects ReleaseBox metadata with npm publishing disabled', () => {
     () => checkPublishConfig(validPackage, { release: { publishNpm: false } }, validWorkflow),
     /releasebox release\.publishNpm must be enabled/,
   );
+});
+
+test('rejects OIDC permission on the workflow-wide validation scope', () => {
+  const workflowWideOidc = validWorkflow.replace('  contents: read', '  contents: read\n  id-token: write').replace('    permissions:\n      id-token: write\n', '');
+  assert.throws(() => checkPublishConfig(validPackage, validReleasebox, workflowWideOidc), /npm publish step must receive the OIDC token permission/);
+  assert.throws(() => checkPublishConfig(validPackage, validReleasebox, validWorkflow.replace('    permissions:\n      id-token: write', '    permissions:\n      contents: write\n      id-token: write')), /must not share a scope/);
 });
 
 test('rejects GitHub release creation before npm publication', () => {

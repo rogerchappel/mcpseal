@@ -6,8 +6,7 @@ on:
       - 'v*.*.*'
 
 permissions:
-  contents: write
-  id-token: write
+  contents: read
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -46,10 +45,15 @@ jobs:
       - name: Build package
         run: npm pack
       - name: Publish package to npm
+        permissions:
+          contents: read
+          id-token: write
         run: npm publish
       - name: Generate release notes
         run: node /tmp/releasebox/bin/releasebox.js notes . > RELEASE_NOTES.md
       - name: Create GitHub release
+        permissions:
+          contents: write
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release create "${GITHUB_REF_NAME}" --notes-file RELEASE_NOTES.md ./*.tgz
