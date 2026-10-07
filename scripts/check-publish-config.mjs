@@ -17,7 +17,12 @@ export function checkPublishConfig(packageJson, releaseboxConfig, workflow) {
   assert.notEqual(publish, -1, 'release workflow must publish to npm');
   assert.notEqual(githubRelease, -1, 'release workflow must create a GitHub release');
   assert(publish < githubRelease, 'npm publication must precede GitHub release creation');
-  assert.match(workflow, /id-token:\s*write/, 'release workflow must grant OIDC token permission');
+  assert.match(workflow, /permissions:\s*\n\s+contents:\s*read/, 'release workflow must default to read-only contents permission');
+  assert.doesNotMatch(workflow, /id-token:\s*write[\s\S]{0,80}contents:\s*write|contents:\s*write[\s\S]{0,80}id-token:\s*write/, 'publish and GitHub release permissions must not share a scope');
+  const publishIndex = workflow.indexOf('name: Publish package to npm');
+  const publishStep = workflow.slice(publishIndex, githubRelease);
+  assert.match(publishStep, /id-token:\s*write/, 'npm publish step must receive the OIDC token permission');
+  assert.doesNotMatch(workflow.slice(0, publishIndex), /id-token:\s*write/, 'validation steps must not receive OIDC token permission');
 }
 
 if (process.argv[1] === new URL(import.meta.url).pathname) {
